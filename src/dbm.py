@@ -17,18 +17,28 @@ class DBManager:
     def create_table(params: dict, database_name='new_works'):
         """ Создает таблицу. """
         conn = psycopg2.connect(dbname=database_name, **params)
-        with conn.cursor()as cur:
+        with conn.cursor() as cur:
             cur.execute("""
             CREATE TABLE employers (
-                channel_id SERIAL PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
-                views INTEGER,
-                subscribers INTEGER,
-                videos INTEGER,
-                channel_url TEXT
+                	vacancy VARCHAR(100)
+
             )
         """)
         conn.commit()
+        conn.close()
+
+    @staticmethod
+    def add_data_in_bd(data, params: dict, database_name='new_works'):
+        """Скрипт для заполнения данными таблиц в БД Postgres."""
+        conn = psycopg2.connect(dbname=database_name, **params)
+        cur = conn.cursor()
+        for vacancy in data:
+            cur.execute(
+                "INSERT INTO employers (vacancy) VALUES (%s)",
+                (vacancy["name"],)
+            )
+        conn.commit()
+        cur.close()
         conn.close()
 
     @staticmethod
@@ -38,8 +48,7 @@ class DBManager:
 
     @staticmethod
     def get_all_vacancies():
-        """  Получает список всех вакансий с указанием названия компании,
-         названия вакансии и зарплаты и ссылки на вакансию. """
+        """  Получает список всех вакансий с указанием названия компании, названия вакансии и зарплаты и ссылки на вакансию. """
         pass
 
     @staticmethod
